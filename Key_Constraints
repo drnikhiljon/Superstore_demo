@@ -1,0 +1,21 @@
+-- Add a Primary Key to the customers_dim table
+ALTER TABLE customers_dim
+ADD PRIMARY KEY ("Customer ID");
+
+-- Add a Primary Key to the products_dim table
+ALTER TABLE products_dim
+ADD PRIMARY KEY ("Product ID");
+
+-- Add a Primary Key to the orders_fact table
+ALTER TABLE orders_fact
+ADD PRIMARY KEY ("Row ID");
+
+-- Add a Foreign Key to the orders_fact table that links to the customers_dim table
+ALTER TABLE orders_fact
+ADD FOREIGN KEY ("Customer ID")
+REFERENCES customers_dim ("Customer ID");
+
+-- Add a Foreign Key to the orders_fact table that links to the products_dim table
+ALTER TABLE orders_fact
+ADD FOREIGN KEY ("Product ID")
+REFERENCES products_dim ("Product ID");
