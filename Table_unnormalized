@@ -16,8 +16,8 @@ CREATE TABLE superstore_sales (
     "Category" VARCHAR(50),
     "Sub-Category" VARCHAR(50),
     "Product Name" VARCHAR(200),
-    "Sales ($)" NUMERIC,
+    "Sales" NUMERIC,
     "Quantity" INTEGER,
-    "Discount($)" NUMERIC,
-    "Profit($)" NUMERIC
+    "Discount" NUMERIC,
+    "Profit" NUMERIC
 );
