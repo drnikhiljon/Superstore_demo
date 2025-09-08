@@ -1,0 +1,35 @@
+-- Step 1: Create a function that will perform the check
+CREATE OR REPLACE FUNCTION check_discount_rate()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- This conditional logic inspects the 'NEW' record (the one being updated)
+    -- If the new 'Discount' is greater than 0.20 (20%), raise an error.
+    IF NEW."Discount" > 0.20 THEN
+        -- The `RAISE` command stops the transaction and prevents the update.
+        RAISE EXCEPTION 'Discount cannot be greater than 20 percent.';
+    END IF;
+
+    -- If the condition is not met, return NEW to allow the update to proceed.
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Step 2: Create the `BEFORE UPDATE` trigger
+CREATE OR REPLACE TRIGGER before_update_discount
+BEFORE UPDATE ON superstore_sales
+FOR EACH ROW
+EXECUTE FUNCTION check_discount_rate();
+
+-- Let's test it:
+
+-- Test Case 1: A successful update.
+-- This will work because the discount is within the allowed limit.
+UPDATE superstore_sales
+SET "Discount" = 0.15
+WHERE "Order ID" = 'CA-2016-152156' AND "Product Name" = 'Bush Somerset Collection Bookcase';
+
+-- Test Case 2: A failed update.
+-- This will fail and raise an error because the discount is too high.
+UPDATE superstore_sales
+SET "Discount" = 0.30
+WHERE "Order ID" = 'CA-2016-152156' AND "Product Name" = 'Bush Somerset Collection Bookcase';
