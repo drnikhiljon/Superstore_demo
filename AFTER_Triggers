@@ -1,0 +1,31 @@
+-- Step 1: Create an audit log table
+CREATE TABLE IF NOT EXISTS sales_audit_log (
+    log_id SERIAL PRIMARY KEY,
+    operation_type VARCHAR(10) NOT NULL,
+    "Order ID" VARCHAR(255) NOT NULL,
+    "Customer Name" VARCHAR(255),
+    operation_timestamp TIMESTAMP DEFAULT now()
+);
+
+-- Step 2: Create a function (the logic) that will be called by the trigger
+CREATE OR REPLACE FUNCTION log_new_sale()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO sales_audit_log (operation_type, "Order ID", "Customer Name")
+    VALUES ('INSERT', NEW."Order ID", NEW."Customer Name");
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Step 3: Create the trigger itself
+CREATE TRIGGER new_sale_trigger
+AFTER INSERT ON superstore_sales
+FOR EACH ROW
+EXECUTE FUNCTION log_new_sale();
+
+-- To test the trigger:
+INSERT INTO superstore_sales ("Order ID", "Customer Name", "Order Date", "Sale")
+VALUES ('TEST-ORDER-12345', 'John Smith', '2025-01-01', 100.00);
+
+-- Now check the log table:
+SELECT * FROM sales_audit_log WHERE "Order ID" = 'TEST-ORDER-12345';
