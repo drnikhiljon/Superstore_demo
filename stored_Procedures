@@ -1,0 +1,31 @@
+-- Create a function (stored procedure) to calculate profit percentage
+CREATE OR REPLACE FUNCTION calculate_profit_percentage(order_id_param VARCHAR(255))
+RETURNS NUMERIC AS $$
+DECLARE
+    total_profit NUMERIC;
+    total_sales NUMERIC;
+    profit_percentage NUMERIC;
+BEGIN
+    -- Aggregate the profit and sales for the given order ID
+    SELECT
+        SUM("Profit"), SUM("Sale")
+    INTO
+        total_profit, total_sales
+    FROM
+        superstore_sales
+    WHERE
+        "Order ID" = order_id_param;
+
+    -- Calculate the percentage (handle division by zero)
+    IF total_sales > 0 THEN
+        profit_percentage := (total_profit / total_sales) * 100;
+    ELSE
+        profit_percentage := 0;
+    END IF;
+
+    RETURN profit_percentage;
+END;
+$$ LANGUAGE plpgsql;
+
+-- To call (execute) the function:
+SELECT calculate_profit_percentage('CA-2016-152156');
