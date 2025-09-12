@@ -10,5 +10,6 @@ SELECT
     superstore_sales."Sales ($)",
     superstore_sales."Quantity",
     superstore_sales."Discount($)",
-    superstore_sales."Profit($)"
+    superstore_sales."Profit($)",
+    superstore_sales."GPS_Customer"
 FROM superstore_sales;
